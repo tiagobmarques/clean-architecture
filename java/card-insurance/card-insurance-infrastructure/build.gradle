@@ -1,0 +1,18 @@
+apply plugin: 'org.springframework.boot'
+
+bootJar {
+    exclude '**/application-dev.properties'
+}
+
+
+dependencies {
+
+    implementation project(':card-insurance-core')
+
+    implementation 'org.springframework.data:spring-data-commons'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation 'org.mapstruct:mapstruct:1.4.1.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.1.Final'
+}

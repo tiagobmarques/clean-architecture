@@ -1,0 +1,4 @@
+rootProject.name = 'card-insurance'
+
+include 'card-insurance-infrastructure'
+include 'card-insurance-core'

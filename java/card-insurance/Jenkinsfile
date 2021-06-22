@@ -1,0 +1,58 @@
+pipeline {
+  agent any
+
+  stages {
+    stage('Download sources'){
+      steps{
+        checkout scm
+      }
+    }
+
+    stage("Build") {
+      steps {
+        sh "cd card-insurance && chmod +x gradlew && ./gradlew build"
+      }
+    }
+
+    stage("Update Database") {
+      steps {
+        sh "cd card-insurance && chmod +x gradlew && ./gradlew flywaymigrate -i"
+      }
+    }
+
+    stage("Docker Push") {
+      steps {
+        sh "cd card-insurance && sudo docker build -t card-insurance:latest . && sudo docker tag card-insurance:latest tiagobm564/card-insurance:latest && sudo docker login --username ${DOCKER_USER} --password ${DOCKER_PWD} && sudo docker push tiagobm564/card-insurance:latest"
+      }
+    }
+
+    stage("Docker Run") {
+      steps {
+        script {
+          sshagent(credentials : ['tax-devops-server-deploy']) {
+            sh "echo Connecting to the remote server"
+            sh '''ssh -t -t ubuntu@ip-10-0-16-12.ec2.internal -o StrictHostKeyChecking=no << EOF
+            #!/bin/bash
+            echo ${REMOTE_HOST}
+            echo Connected to Card Insurance App
+            echo Stopping container
+            sudo docker stop -t 0 \\$(sudo docker ps -q)
+            sudo docker container prune --force
+            echo Removing image
+            sudo docker rmi tiagobm564/card-insurance:latest
+            sudo docker run -d -p 8080:8080 tiagobm564/card-insurance:latest
+            echo Card Insurance Application Running!!!
+            exit
+            EOF'''
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      cleanWs()
+    }
+  }
+}
