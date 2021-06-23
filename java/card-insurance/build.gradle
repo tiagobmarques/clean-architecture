@@ -17,45 +17,11 @@ plugins {
 
 allprojects {
     apply plugin: 'idea'
-    apply plugin: 'jacoco'
-    apply plugin: 'project-report'
 
     repositories {
         jcenter()
-
     }
-
-    configurations {
-        published
-        all {
-            resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-        }
-
-        all {
-            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-        }
-    }
-
-    jacoco {
-        toolVersion = "0.8.5"
-        reportsDir = file("$buildDir/jacoco")
-    }
-
 }
-
-// exclude these files from the coverage report
-def excludePattern = ['**/*Config*',
-                      '**/*Application.*',
-                      '**/controller/**/*Response.*',
-                      '**/controller/**/*Request.*',
-                      '**/**/**/*Builder.*',
-                      '**/core/**/*Config.*',
-                      '**/core/**/*Consumer*',
-                      '**/core/**/*Dto.*',
-                      '**/core/**/*Entity.*',
-                      '**/core/**/*Exception.*',
-                      '**/core/**/*Properties.*',
-                      '**/core/**/*Repository.*']
 
 subprojects {
     apply plugin: 'java'
@@ -75,15 +41,8 @@ subprojects {
     }
 
     dependencies {
-        implementation 'org.springframework.boot:spring-boot-starter-webflux'
-        implementation 'org.springframework.boot:spring-boot-starter-log4j2'
-
-        runtime 'com.vlkan.log4j2:log4j2-logstash-layout:1.0.2'
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
-
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-        testImplementation 'io.projectreactor:reactor-test'
     }
 
     dependencyManagement {
@@ -91,64 +50,13 @@ subprojects {
             mavenBom SpringBootPlugin.BOM_COORDINATES
         }
     }
-
-    jacocoTestCoverageVerification {
-        getSourceDirectories().from(files(sourceSets.getByName("main").allSource.srcDirs))
-        afterEvaluate {
-            getClassDirectories().setFrom(files(classDirectories.files.collect {
-                fileTree(dir: it, exclude: excludePattern)
-            }))
-        }
-
-        violationRules {
-            rule {
-                limit {
-                    minimum = 0.1
-                }
-            }
-        }
-    }
-
-    check.dependsOn jacocoTestCoverageVerification
-
-    // Ensure that the HTML reports of unit and integration tests are written to different directories.
-    tasks.withType(Test) {
-        useJUnitPlatform()
-
-        reports.html.destination = file("${reporting.baseDir}/${name}")
-
-        testLogging {
-            // Show that tests are run in the command-line output
-            events 'passed'
-        }
-    }
-}
-
-task coverageReport(type: JacocoReport) {
-    dependsOn = subprojects.test
-    additionalSourceDirs.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
-    sourceDirectories.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories.setFrom files(subprojects.sourceSets.main.output)
-    executionData.setFrom project.fileTree(dir: '.', include: '**/build/jacoco/test.exec')
-    afterEvaluate {
-        getClassDirectories().setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: excludePattern)
-        }))
-    }
-    reports {
-        xml.enabled true
-        xml.destination file("${buildDir}/reports/jacoco.xml")
-        html.enabled true
-        html.destination file("${buildDir}/reports/html")
-        csv.enabled false
-    }
 }
 
 flyway {
 
     def props = new Properties()
 
-    file("card-insurance-infrastructure/src/main/resources/application-prod.properties").withInputStream { props.load(it) }
+    file("card-insurance-api/src/main/resources/application-prod.properties").withInputStream { props.load(it) }
 
     def dataSourceUrl = props.getProperty("spring.datasource.url")
     def dataSourceUser = props.getProperty("spring.datasource.username")
