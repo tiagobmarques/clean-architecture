@@ -1,4 +1,4 @@
-package com.bmarques.cardinsurance.controller.v1.healthcheck;
+package com.bmarques.cardinsurance.api.v1.healthcheck;
 
 import com.bmarques.cardinsurance.contract.CTBase;
 import com.bmarques.cardinsurance.core.healthcheck.HealthCheckService;

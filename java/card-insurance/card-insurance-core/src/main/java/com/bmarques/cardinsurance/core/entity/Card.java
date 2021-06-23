@@ -1,4 +1,4 @@
-package com.bmarques.cardinsurance.core.card;
+package com.bmarques.cardinsurance.core.entity;
 
 import lombok.*;
 
@@ -10,7 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CardEntity {
+public class Card {
 
     private UUID id;
     private String number;

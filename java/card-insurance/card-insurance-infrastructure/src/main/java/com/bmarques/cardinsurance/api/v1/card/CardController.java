@@ -1,11 +1,11 @@
-package com.bmarques.cardinsurance.controller.v1.card;
+package com.bmarques.cardinsurance.api.v1.card;
 
-import com.bmarques.cardinsurance.core.card.CardEntity;
-import com.bmarques.cardinsurance.core.card.CardService;
+import com.bmarques.cardinsurance.core.entity.Card;
+import com.bmarques.cardinsurance.core.entity.Paged;
+import com.bmarques.cardinsurance.core.service.CardService;
 import com.bmarques.cardinsurance.utils.PageFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,13 +22,10 @@ public class CardController {
     @Autowired
     private CardService service;
 
-//    @Autowired
-//    private CardMapper cardMapper;
-
     @GetMapping
-    public Mono<Page<CardEntity>> getListCard(
+    public Mono<Paged<Card>> getListCard(
             @Valid PageFilter pageFilter) {
-        return Mono.fromCallable(() -> service.getListCard(pageFilter.toPageable()))
+        return Mono.fromCallable(() -> service.findAllProductPaged(pageFilter.toPageable()))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 }

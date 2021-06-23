@@ -1,4 +1,4 @@
-package com.bmarques.cardinsurance.controller.v1.card;
+package com.bmarques.cardinsurance.api.v1.card;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

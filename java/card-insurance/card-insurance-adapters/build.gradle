@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+version 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':card-insurance-core')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    implementation 'org.springframework.data:spring-data-jdbc'
+    implementation 'org.postgresql:postgresql'
+}
+
+test {
+    useJUnitPlatform()
+}
